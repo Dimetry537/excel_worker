@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 tk = "^0.1.0"
+celery = "^5.4.0"
 
 
 [build-system]

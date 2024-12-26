@@ -1,0 +1,72 @@
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - celery
+      - flower
+
+  pg:
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - ./src/db/dumps:/docker-entrypoint-initdb.d
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: maksakov1988@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin2208
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - pg
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    volumes:
+      - redis-data:/data
+
+  celery:
+    container_name: celery
+    build: .
+    command: celery -A src.tasks.tasks:celery worker --loglevel=info
+    volumes:
+      - .:/app
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+    depends_on:
+      - redis
+ 
+  flower:
+    container_name: flower
+    build: .
+    command: celery -A celery flower --port=5555
+    ports:
+      - "5556:5555"
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+    depends_on:
+      - redis
+      - celery
+
+volumes:
+  pg-data:
+    driver: local
+  pgadmin-data:
+    driver: local
+  redis-data:
+    driver: local
