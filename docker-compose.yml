@@ -1,11 +1,16 @@
 version: "3"
 services:
-  web:
+  tk:
     build: .
     ports:
       - "8000:8000"
     volumes:
       - .:/app
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    environment:
+      - DISPLAY=${DISPLAY}
+    stdin_open: true
+    tty: true
     depends_on:
       - redis
       - celery

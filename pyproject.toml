@@ -6,7 +6,7 @@ authors = ["Dimetry537 <maksakov1988@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"
 tk = "^0.1.0"
 celery = "^5.4.0"
 
