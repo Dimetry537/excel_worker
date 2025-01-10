@@ -9,6 +9,7 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     environment:
       - DISPLAY=${DISPLAY}
+    user: "${UID}:${GID}"
     stdin_open: true
     tty: true
     depends_on:
