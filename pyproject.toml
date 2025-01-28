@@ -9,6 +9,9 @@ readme = "README.md"
 python = "^3.10"
 tk = "^0.1.0"
 celery = "^5.4.0"
+SQLAlchemy = "^2.0.37"
+asyncpg = "^0.30.0"
+python-dotenv = "^1.0.1"
 
 
 [build-system]
