@@ -12,7 +12,6 @@ ENV PYTHONFAULTHANDLER=1 \
 RUN apk add --update build-base
 RUN apk add --no-cache ttf-dejavu fontconfig
 RUN apk add postgresql-dev python3-dev musl-dev
-RUN apk add python3-tkinter
 RUN apk add libxml2-dev libxslt-dev
 RUN apk add make
 RUN apk add git
@@ -20,9 +19,13 @@ RUN apk add bash
 RUN pip install --upgrade "pip==$PIP_VERSION" && pip install "poetry==$POETRY_VERSION"
 
 WORKDIR /app
-COPY poetry.lock pyproject.toml /app/
 
-RUN poetry config virtualenvs.create false \ 
+COPY . /app/
+
+COPY poetry.lock pyproject.toml /app/
+RUN poetry config virtualenvs.create false \
   && poetry install --no-interaction --no-ansi
 
+
 CMD ["python3", "main.py"]
+
