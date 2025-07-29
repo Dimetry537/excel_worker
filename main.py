@@ -1,4 +1,6 @@
-from src.gui.main_window import run_app
+import uvicorn
+
+from src.app import *
 
 if __name__ == "__main__":
-    run_app()
+    uvicorn.run("main:app", port=8000, host="0.0.0.0", reload=True)
