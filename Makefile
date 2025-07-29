@@ -1,4 +1,4 @@
-# Makefile
+# Makefile docker exec -it <container id> /bin/bash
 
 PROJECT_ROOT=/
 APP_DIR=/app
