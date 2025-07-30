@@ -8,19 +8,18 @@ class DoctorRepository(BaseRepository[Doctor]):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Doctor)
 
-    async def create(self, obj_in: PersonalCreate) -> Doctor:
-        return await super().create(obj_in.model_dump())
+    async def create(self, obj_in: PersonalCreate) -> PersonalRead:
+        doctor = await super().create(obj_in.model_dump())
+        return PersonalRead.model_validate(doctor)
     
-    async def update(self, obj_id: int, obj_in: PersonalCreate) -> Optional[Doctor]:
-        return await super().update(obj_id, obj_in.model_dump())
-    
-    async def get_all(self) -> list[PersonalRead]:
-        doctors = await super().get_all()
-        return [PersonalRead.model_validate(doctor) for doctor in doctors]
-    
-    async def get_by_id(self, id: int) -> Optional[PersonalRead]:
-        doctor = await super().get_by_id(id)
+    async def update(self, obj_id: int, obj_in: PersonalCreate) -> Optional[PersonalRead]:
+        updated = await super().update(obj_id, obj_in.model_dump())
+        if updated:
+            return PersonalRead.model_validate(updated)
+        return None
+
+    async def delete(self, id: int) -> Optional[PersonalRead]:
+        doctor = await super().delete(id)
         if doctor:
             return PersonalRead.model_validate(doctor)
         return None
-

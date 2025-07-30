@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import TIMESTAMP
+from datetime import datetime, timezone
 
 from src.db.base import Base, TimestampMixin
 from src.models.cax_code import CaxCode
@@ -26,3 +28,7 @@ class MedicalHistory(Base, TimestampMixin):
     cax_code = relationship("CaxCode")
     doctor = relationship("Doctor")
     nurse = relationship("Nurse")
+
+    created_at = Column(TIMESTAMP(timezone=True), default=datetime.now(timezone.utc))
+    updated_at = Column(TIMESTAMP(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    
