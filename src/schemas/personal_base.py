@@ -7,7 +7,7 @@ class PersonalBase(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-class personalCreate(PersonalBase):
+class PersonalCreate(PersonalBase):
     pass
 
 class PersonalRead(PersonalBase):
