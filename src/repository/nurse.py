@@ -14,23 +14,13 @@ class NurseRepository(BaseRepository[Nurse]):
         return PersonalRead.model_validate(nurse)
     
     async def update(self, obj_id: int, obj_in: PersonalCreate) -> Optional[Nurse]:
-        nurse = await super().update(obj_id, obj_in.model_dump())
-        if nurse:
-            return PersonalRead.model_validate(nurse)
+        updated = await super().update(obj_id, obj_in.model_dump())
+        if updated:
+            return PersonalRead.model_validate(updated)
         return None
     
     async def delete(self, id: int) -> Optional[PersonalRead]:
         nurse = await super().delete(id)
-        if nurse:
-            return PersonalRead.model_validate(nurse)
-        return None
-    
-    async def get_all(self) -> list[PersonalRead]:
-        nurses = await super().get_all()
-        return [PersonalRead.model_validate(nurse) for nurse in nurses]
-    
-    async def get_by_id(self, id: int) -> Optional[PersonalRead]:
-        nurse = await super().get_by_id(id)
         if nurse:
             return PersonalRead.model_validate(nurse)
         return None
