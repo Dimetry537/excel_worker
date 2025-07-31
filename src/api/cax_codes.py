@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.schemas.cax_code import CaxCodeCreate, CaxCodeRead
-from src.repository.cax_code import CaxCodeRepository
+from src.repository.cax_code_repository import CaxCodeRepository
 from src.db.base import get_async_session
 
 router = APIRouter(prefix="/cax_codes", tags=["Cax Codes"])

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.schemas.personal_base import PersonalCreate, PersonalRead
-from src.repository.nurse import NurseRepository
+from src.repository.nurse_repository import NurseRepository
 from src.db.base import get_async_session
 
 router = APIRouter(prefix="/nurses", tags=["nurses"])
