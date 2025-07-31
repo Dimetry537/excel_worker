@@ -20,6 +20,7 @@ class MedicalHistory(Base, TimestampMixin):
     address = Column(Date, nullable=False)
     diagnosis = Column(String, nullable=False)
     icd10_code = Column(String, nullable=False)
+    cancelled = Column(String, nullable=True)
 
     cax_code_id = Column(Integer, ForeignKey("cax_codes.id"), nullable=False)
     doctor_id = Column(Integer, ForeignKey("doctors.id"), nullable=False)

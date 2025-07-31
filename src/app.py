@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.doctor import router as doctor_router
 from src.api.nurse import router as nurse_router
+from src.api.cax_codes import router as cax_code_router
 
 app = FastAPI(title="Excel-Worker")
 
@@ -18,3 +19,4 @@ app.add_middleware(
 
 app.include_router(doctor_router)
 app.include_router(nurse_router)
+app.include_router(cax_code_router)
