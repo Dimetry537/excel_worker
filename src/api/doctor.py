@@ -56,3 +56,15 @@ async def delete_doctor(
     if not deleted:
         raise HTTPException(status_code=404, detail="Doctor not found")
     return PersonalRead.model_validate(deleted)
+
+@router.patch("/{doctor_id}/toggle_active", response_model=PersonalRead)
+async def toggle_active_status(
+    doctor_id: int,
+    session: AsyncSession = Depends(get_async_session)
+):
+    repo = DoctorRepository(session)
+    updated = await repo.toggle_active(doctor_id)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Doctor not found")
+    return updated
+

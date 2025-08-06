@@ -56,3 +56,14 @@ async def delete_nurse(
     if not deleted:
         raise HTTPException(status_code=404, detail="Nurse not found")
     return PersonalRead.model_validate(deleted)
+
+@router.patch("/{nurse_id}/toggle_active", response_model=PersonalRead)
+async def toggle_active_status(
+    nurse_id: int,
+    session: AsyncSession = Depends(get_async_session)
+):
+    repo = NurseRepository(session)
+    updated = await repo.toggle_active(nurse_id)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Nurse not found")
+    return updated

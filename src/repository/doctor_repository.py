@@ -23,3 +23,14 @@ class DoctorRepository(BaseRepository[Doctor]):
         if doctor:
             return PersonalRead.model_validate(doctor)
         return None
+    
+    async def toggle_active(self, obj_id: int) -> Optional[PersonalRead]:
+        doctor = await self.session.get(Doctor, obj_id)
+        if not doctor:
+            return None
+
+        doctor.is_active = not doctor.is_active
+        await self.session.commit()
+        await self.session.refresh(doctor)
+        return PersonalRead.model_validate(doctor)
+

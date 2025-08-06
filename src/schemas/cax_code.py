@@ -4,6 +4,7 @@ from datetime import datetime
 class CaxCode(BaseModel):
     cax_name: str
     cax_code: int
+    quantity_of_days: int
 
     model_config = ConfigDict(from_attributes=True)
 

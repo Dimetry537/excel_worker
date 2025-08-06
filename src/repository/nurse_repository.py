@@ -24,3 +24,13 @@ class NurseRepository(BaseRepository[Nurse]):
         if nurse:
             return PersonalRead.model_validate(nurse)
         return None
+    
+    async def toggle_active(self, obj_id: int) -> Optional[PersonalRead]:
+        nurse = await self.session.get(Nurse, obj_id)
+        if not nurse:
+            return None
+
+        nurse.is_active = not nurse.is_active
+        await self.session.commit()
+        await self.session.refresh(nurse)
+        return PersonalRead.model_validate(nurse)
