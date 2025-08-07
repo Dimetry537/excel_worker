@@ -1,20 +1,12 @@
 from datetime import date, timedelta
 import holidays
 
-RU_HOLIDAYS = holidays.Russia()
+RU_HOLIDAYS = holidays.RU()
 
 def calculate_discharge_date(admission_date: date, quantity_of_days: int) -> date:
-    current_date = admission_date
-    days_counted = 0
+    target_date = admission_date + timedelta(days=quantity_of_days)
 
-    while days_counted < quantity_of_days:
-        current_date += timedelta(days=1)
+    while target_date.weekday() >= 5 or target_date in RU_HOLIDAYS:
+        target_date += timedelta(days=1)
 
-        if current_date.weekday() < 5:
-            continue
-        if current_date in RU_HOLIDAYS:
-            continue
-
-        added_days += 1
-
-    return current_date
+    return target_date
