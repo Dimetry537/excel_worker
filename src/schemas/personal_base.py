@@ -12,5 +12,6 @@ class PersonalCreate(PersonalBase):
 
 class PersonalRead(PersonalBase):
     id: int
+    is_active: bool
     created_at: datetime
     updated_at: datetime
