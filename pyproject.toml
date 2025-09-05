@@ -21,6 +21,7 @@ pydantic = "^2.11.7"
 starlette = "^0.47.2"
 holidays = "^0.78"
 oracledb = "^3.3.0"
+libaio = "^0.9.3"
 
 
 [build-system]
