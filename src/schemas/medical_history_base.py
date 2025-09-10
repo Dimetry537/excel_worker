@@ -2,6 +2,9 @@ from pydantic import BaseModel, ConfigDict
 from datetime import date, datetime
 from typing import Optional
 
+from src.schemas.personal_base import PersonalRead
+from src.schemas.cax_code import CaxCodeRead
+
 class MedicalHistoryBase(BaseModel):
     admission_date: date
     discharge_date: Optional[date] = None
@@ -24,5 +27,7 @@ class MedicalHistoryRead(MedicalHistoryBase):
     id: int
     history_number: int
     cancelled: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
+
+    doctor: PersonalRead
+    nurse: PersonalRead
+    cax_code: CaxCodeRead

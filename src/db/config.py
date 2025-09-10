@@ -15,7 +15,7 @@ ORACLE_PASSWORD = os.environ.get("ORACLE_PASSWORD")
 ORACLE_HOST = os.environ.get("ORACLE_HOST")
 ORACLE_PORT = os.environ.get("ORACLE_PORT")
 ORACLE_SERVICE = os.environ.get("ORACLE_SERVICE")
-ORACLE_CLIENT = os.environ.get("ORACLE_CLIENT", "/opt/oracle/instantclient_23_9")
+ORACLE_CLIENT = os.environ.get("ORACLE_CLIENT")
 
 DB_HOST_TEST = os.environ.get("DB_HOST_TEST")
 DB_PORT_TEST = os.environ.get("DB_PORT_TEST")

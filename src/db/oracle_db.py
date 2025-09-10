@@ -1,23 +1,41 @@
 import oracledb
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
+from contextlib import contextmanager
+
 from src.db.config import ORACLE_HOST, ORACLE_PORT, ORACLE_USER, ORACLE_PASSWORD, ORACLE_SERVICE, ORACLE_CLIENT
 
-# oracledb.init_oracle_client(lib_dir="/opt/oracle/instantclient_23_9")
+print (f"Oracle Client: {ORACLE_CLIENT}")
+
+if ORACLE_CLIENT:
+    oracledb.init_oracle_client(lib_dir=ORACLE_CLIENT)
 
 ORACLE_DATABASE_URL = f"oracle+oracledb://{ORACLE_USER}:{ORACLE_PASSWORD}@{ORACLE_HOST}:{ORACLE_PORT}/?service_name={ORACLE_SERVICE}"
 
-oracle_engine = create_async_engine(
+engine = create_engine(
     ORACLE_DATABASE_URL,
-    echo=True
+    echo=True,
+    pool_size=5,
+    max_overflow=10,
+    pool_pre_ping=True,
 )
 
-OracleSessionLocal = async_sessionmaker(
-    bind=oracle_engine,
+SessionLocal = sessionmaker(
+    bind=engine,
+    autocommit=False,
     autoflush=False,
     expire_on_commit=False,
-    class_=AsyncSession
+    class_=Session
 )
 
-async def get_oracle_session() -> AsyncSession:
-    async with OracleSessionLocal() as session:
-        yield session
+@contextmanager
+def get_db_session():
+    db = SessionLocal()
+    try:
+        yield db
+        db.commit()
+    except:
+        db.rollback()
+        raise
+    finally:
+        db.close()
