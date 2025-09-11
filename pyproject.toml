@@ -22,6 +22,7 @@ starlette = "^0.47.2"
 holidays = "^0.78"
 oracledb = "^3.3.0"
 libaio = "^0.9.3"
+openpyxl = "^3.1.5"
 
 
 [build-system]

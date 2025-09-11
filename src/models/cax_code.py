@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from datetime import datetime, timezone
 
@@ -11,5 +11,6 @@ class CaxCode(Base, TimestampMixin):
     cax_name = Column(String, unique=True, nullable=False)
     cax_code = Column(Integer, unique=True, nullable=False)
     quantity_of_days = Column(Integer, unique=False, nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), default=datetime.now(timezone.utc))
     updated_at = Column(TIMESTAMP(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
