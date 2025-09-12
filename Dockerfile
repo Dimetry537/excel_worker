@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.10-slim-bullseye
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1 \
@@ -22,24 +22,31 @@ RUN apt-get update && apt-get install -y \
     wget \
     unzip \
     libaio-dev \
-    fonts-dejavu-core
-
-
-RUN pip install --upgrade "pip==$PIP_VERSION" && pip install "poetry==$POETRY_VERSION"
+    libaio1 \
+    libnsl2 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install --upgrade "pip==$PIP_VERSION" \
+    && pip install "poetry==$POETRY_VERSION"
 
 WORKDIR /opt/oracle
 RUN wget https://download.oracle.com/otn_software/linux/instantclient/2390000/instantclient-basic-linux.x64-23.9.0.25.07.zip \
-        && unzip instantclient-basic-linux.x64-23.9.0.25.07.zip \
-        && rm instantclient-basic-linux.x64-23.9.0.25.07.zip \
-        && ln -s /opt/oracle/instantclient_23_9/libclntsh.so /usr/lib/libclntsh.so
-        
+    && wget https://download.oracle.com/otn_software/linux/instantclient/2390000/instantclient-sqlplus-linux.x64-23.9.0.25.07.zip \
+    && unzip -o instantclient-basic-linux.x64-23.9.0.25.07.zip \
+    && unzip -o instantclient-sqlplus-linux.x64-23.9.0.25.07.zip \
+    && rm instantclient-basic-linux.x64-23.9.0.25.07.zip \
+    && rm instantclient-sqlplus-linux.x64-23.9.0.25.07.zip \
+    && ln -s /opt/oracle/instantclient_23_9/libclntsh.so /usr/lib/libclntsh.so \
+    && ln -s /opt/oracle/instantclient_23_9/libsqlplus.so /usr/lib/libsqlplus.so
+
 ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_23_9
 
-RUN echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
-RUN ls -la /opt/oracle/instantclient_23_9
+RUN echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" \
+    && ls -la /opt/oracle/instantclient_23_9
+
+
 
 WORKDIR /app
-
 COPY . /app/
 
 RUN poetry config virtualenvs.create false \
