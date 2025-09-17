@@ -14,52 +14,53 @@ def oracle_test(session: Session = Depends(get_db)):
 
 @router.get("/patient-search")
 def search_patient(
-    lastname: Optional[str] = Query(None, description="Patient last name (partial match)"),
-    firstname: Optional[str] = Query(None, description="Patient first name (partial match)"),
-    secondname: Optional[str] = Query(None, description="Patient second name (partial match)"),
-    birthdate: Optional[str] = Query(None, description="Patient birthdate (DD.MM.YYYY)"),
-    num: Optional[str] = Query(None, description="Patient card number (partial match)"),
+    lastname: Optional[str] = Query(None, description="Фамилия пациента (частичное совпадение)"),
+    firstname: Optional[str] = Query(None, description="Имя пациента (частичное совпадение)"),
+    secondname: Optional[str] = Query(None, description="Отчество пациента (частичное совпадение)"),
+    birthdate: Optional[str] = Query(None, description="Дата рождения пациента (ДД.ММ.ГГГГ)"),
+    adress: Optional[str] = Query(None, description="Адрес пациента (частичное совпадение)"),
     session: Session = Depends(get_db)
 ):
+
+    is_empty_query = all(param is None or param.strip() == "" for param in [lastname, firstname, secondname, birthdate, adress])
+
     query = text("""
-        SELECT 
+        SELECT
             fn_pat_name_by_id(p.keyid) AS FIO,
             TO_CHAR(p.birthdate, 'dd.mm.yyyy') AS BD,
             p_pat.address(p.keyid) AS ADR
         FROM SOLUTION_MED.patient p
-        WHERE (:lastname IS NULL OR UPPER(p.lastname) LIKE UPPER(:lastname || '%'))
-          AND (:firstname IS NULL OR UPPER(p.firstname) LIKE UPPER(:firstname || '%'))
-          AND (:secondname IS NULL OR UPPER(p.secondname) LIKE UPPER(:secondname || '%'))
-          AND (:birthdate IS NULL OR TO_CHAR(p.birthdate, 'dd.mm.yyyy') = :birthdate)
-          AND (:num IS NULL OR EXISTS (
-              SELECT 1 FROM SOLUTION_MED.pat_card pc 
-              WHERE pc.id_pat = p.keyid 
-                AND UPPER(pc.num) LIKE UPPER(:num || '%')
-          ))
+        WHERE 
+            (:surname IS NULL OR p.LASTNAME LIKE NULLIF(:surname, '') || '%')
+            AND (:firstName IS NULL OR p.FIRSTNAME LIKE NULLIF(:firstName, '') || '%')
+            AND (:secondName IS NULL OR p.SECONDNAME LIKE NULLIF(:secondName, '') || '%')
+            AND (:birthdate IS NULL OR p.birthdate = TO_DATE(NULLIF(:birthdate, ''), 'dd.mm.yyyy'))
+            AND (:adress IS NULL OR p_pat.address(p.keyid) LIKE '%' || NULLIF(:adress, '') || '%')
+            AND ROWNUM <= 100
+        ORDER BY fn_pat_name_by_id(p.keyid)
     """)
 
-    # Параметры для SQL-запроса
     params = {
-        "lastname": lastname,
-        "firstname": firstname,
-        "secondname": secondname,
+        "surname": lastname,
+        "firstName": firstname,
+        "secondName": secondname,
         "birthdate": birthdate,
-        "num": num
+        "adress": adress,
+        "is_empty_query": 1 if is_empty_query else 0
     }
 
     try:
         result = session.execute(query, params)
         rows = result.fetchall()
 
-        # Форматируем результат в список словарей
         response = [
             {
-                "pname": row[0],  # FIO
-                "birthdate": row[1],  # BD
-                "address": row[2]  # ADR
+                "pname": row[0],
+                "birthdate": row[1],
+                "address": row[2]
             } for row in rows
         ]
 
-        return response if response else {"error": "No patients found"}
+        return response if response else {"error": "Пациенты не найдены"}
     except Exception as e:
-        return {"error": f"Database error: {str(e)}"}
+        return {"error": f"Ошибка базы данных: {str(e)}"}
