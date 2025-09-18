@@ -55,3 +55,14 @@ async def delete_cax_code(
     if not deleted:
         raise HTTPException(status_code=404, detail="Cax Code not found")
     return CaxCodeRead.model_validate(deleted)
+
+@router.patch("/{cax_id}/toggle_active", response_model=CaxCodeRead)
+async def toggle_cax_code_active(
+    cax_id: int,
+    session: AsyncSession = Depends(get_async_session)
+):
+    repo = CaxCodeRepository(session)
+    toggled = await repo.toggle_active(cax_id)
+    if not toggled:
+        raise HTTPException(status_code=404, detail="Cax Code not found")
+    return toggled
