@@ -47,3 +47,25 @@ async def update_history(
     if not updated:
         raise HTTPException(status_code=404, detail="Medical history not found")
     return MedicalHistoryRead.model_validate(updated)
+
+@router.post("/{history_id}/cancel", response_model=MedicalHistoryRead)
+async def cancel_history(
+    history_id: int,
+    session: AsyncSession = Depends(get_async_session)
+):
+    repo = MedicalHistoryRepository(session)
+    cancelled = await repo.cancel(history_id)
+    if not cancelled:
+        raise HTTPException(status_code=404, detail="Medical history not found")
+    return MedicalHistoryRead.model_validate(cancelled)
+
+@router.post("/{history_id}/reactivate", response_model=MedicalHistoryRead)
+async def reactivate_history(
+    history_id: int,
+    session: AsyncSession = Depends(get_async_session)
+):
+    repo = MedicalHistoryRepository(session)
+    reactivated = await repo.reactivate(history_id)
+    if not reactivated:
+        raise HTTPException(status_code=404, detail="Medical history not found")
+    return MedicalHistoryRead.model_validate(reactivated)

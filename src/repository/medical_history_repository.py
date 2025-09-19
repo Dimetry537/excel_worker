@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, extract
+from sqlalchemy import select, func, extract, update
 from typing import Optional
 from sqlalchemy.orm import selectinload
 
@@ -99,3 +99,53 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
             stmt = stmt.where(MedicalHistory.admission_date == admission_date)
         result = await self.session.execute(stmt)
         return [MedicalHistoryRead.model_validate(r) for r in result.scalars().all()]
+
+    async def cancel(self, obj_id: int) -> Optional[MedicalHistoryRead]:
+        stmt = (
+            update(MedicalHistory)
+            .where(MedicalHistory.id == obj_id)
+            .values(cancelled="отменена")
+            .returning(MedicalHistory)
+        )
+        result = await self.session.execute(stmt)
+        await self.session.commit()
+        history = result.scalar_one_or_none()
+        if history:
+            stmt = (
+                select(MedicalHistory)
+                .options(
+                    selectinload(MedicalHistory.doctor),
+                    selectinload(MedicalHistory.nurse),
+                    selectinload(MedicalHistory.cax_code),
+                )
+                .where(MedicalHistory.id == obj_id)
+            )
+            result = await self.session.execute(stmt)
+            history = result.scalar_one()
+            return MedicalHistoryRead.model_validate(history)
+        return None
+
+    async def reactivate(self, obj_id: int) -> Optional[MedicalHistoryRead]:
+        stmt = (
+            update(MedicalHistory)
+            .where(MedicalHistory.id == obj_id)
+            .values(cancelled=None)
+            .returning(MedicalHistory)
+        )
+        result = await self.session.execute(stmt)
+        await self.session.commit()
+        history = result.scalar_one_or_none()
+        if history:
+            stmt = (
+                select(MedicalHistory)
+                .options(
+                    selectinload(MedicalHistory.doctor),
+                    selectinload(MedicalHistory.nurse),
+                    selectinload(MedicalHistory.cax_code),
+                )
+                .where(MedicalHistory.id == obj_id)
+            )
+            result = await self.session.execute(stmt)
+            history = result.scalar_one()
+            return MedicalHistoryRead.model_validate(history)
+        return None
