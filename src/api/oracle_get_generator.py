@@ -21,8 +21,10 @@ def search_patient(
     adress: Optional[str] = Query(None, description="Адрес пациента (частичное совпадение)"),
     session: Session = Depends(get_db)
 ):
-
     is_empty_query = all(param is None or param.strip() == "" for param in [lastname, firstname, secondname, birthdate, adress])
+
+    if is_empty_query:
+        return {"error": "Не указаны параметры поиска. Введите хотя бы один параметр."}
 
     query = text("""
         SELECT
@@ -31,11 +33,11 @@ def search_patient(
             p_pat.address(p.keyid) AS ADR
         FROM SOLUTION_MED.patient p
         WHERE 
-            (:surname IS NULL OR p.LASTNAME LIKE NULLIF(:surname, '') || '%')
-            AND (:firstName IS NULL OR p.FIRSTNAME LIKE NULLIF(:firstName, '') || '%')
-            AND (:secondName IS NULL OR p.SECONDNAME LIKE NULLIF(:secondName, '') || '%')
+            (:surname IS NULL OR UPPER(p.LASTNAME) LIKE UPPER(NULLIF(:surname, '')) || '%')
+            AND (:firstName IS NULL OR UPPER(p.FIRSTNAME) LIKE UPPER(NULLIF(:firstName, '')) || '%')
+            AND (:secondName IS NULL OR UPPER(p.SECONDNAME) LIKE UPPER(NULLIF(:secondName, '')) || '%')
             AND (:birthdate IS NULL OR p.birthdate = TO_DATE(NULLIF(:birthdate, ''), 'dd.mm.yyyy'))
-            AND (:adress IS NULL OR p_pat.address(p.keyid) LIKE '%' || NULLIF(:adress, '') || '%')
+            AND (:adress IS NULL OR UPPER(p_pat.address(p.keyid)) LIKE '%' || UPPER(NULLIF(:adress, '')) || '%')
             AND ROWNUM <= 100
         ORDER BY fn_pat_name_by_id(p.keyid)
     """)
@@ -46,7 +48,6 @@ def search_patient(
         "secondName": secondname,
         "birthdate": birthdate,
         "adress": adress,
-        "is_empty_query": 1 if is_empty_query else 0
     }
 
     try:
@@ -61,6 +62,6 @@ def search_patient(
             } for row in rows
         ]
 
-        return response if response else {"error": "Пациенты не найдены"}
+        return response if response else {"error": f"Пациенты не найдены для параметров: lastname={lastname}, firstname={firstname}, secondname={secondname}, birthdate={birthdate}, address={adress}"}
     except Exception as e:
         return {"error": f"Ошибка базы данных: {str(e)}"}
