@@ -40,7 +40,7 @@ services:
   celery:
     container_name: celery
     build: .
-    command: celery -A src.tasks.tasks:celery worker --loglevel=info
+    command: celery -A src.tasks.tasks worker --loglevel=info
     volumes:
       - .:/app
     environment:
@@ -48,11 +48,13 @@ services:
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
     depends_on:
       - redis
+    env_file:
+      - .env
  
   flower:
     container_name: flower
     build: .
-    command: celery -A celery flower --port=5555
+    command: celery -A src.tasks.tasks flower --port=5555
     ports:
       - "5556:5555"
     environment:
