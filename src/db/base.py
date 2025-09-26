@@ -1,14 +1,18 @@
 from typing import AsyncGenerator
 from datetime import datetime, timezone
-from sqlalchemy  import Column, DateTime, func
+from sqlalchemy  import Column
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 Base = declarative_base()
 
 class TimestampMixin:
-    created_at = Column(DateTime, default=datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    # created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    # updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at = Column(TIMESTAMP(timezone=True), default=datetime.now(timezone.utc))
+    updated_at = Column(TIMESTAMP(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+
 
 from src.db.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
 
