@@ -24,7 +24,7 @@ def say_hello():
 say_hello.delay()
 
 @shared_task
-def export_medical_histories_task(file_path: str = "export") -> str:
+def export_medical_histories_task(file_path: str = "exports") -> str:
     async def run_export():
         async with async_session() as session:
             return await export_medical_histories_to_excel(session, file_path)

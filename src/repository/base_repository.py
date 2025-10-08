@@ -9,10 +9,13 @@ class BaseRepository(Generic[T]):
         self.session = session
         self.model = model
 
-    async def get_by_id(self, id: int) -> T | None:
+    async def _get_orm_by_id(self, id: int) -> T | None:
         stmt = select(self.model).where(self.model.id == id)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def get_by_id(self, id: int) -> T | None:
+        return await self._get_orm_by_id(id)
     
     async def get_all(self) -> list[T]:
         stmt = select(self.model)
@@ -27,7 +30,7 @@ class BaseRepository(Generic[T]):
         return obj
     
     async def update(self, obj_id: int, obj_in: dict) -> T | None:
-        obj = await self.get_by_id(obj_id)
+        obj = await self._get_orm_by_id(obj_id)
 
         if not obj:
             return None
@@ -39,7 +42,7 @@ class BaseRepository(Generic[T]):
         return obj
     
     async def delete(self, obj_id: int) -> Optional[T]:
-        obj = await self.get_by_id(obj_id)
+        obj = await self._get_orm_by_id(obj_id)
         if obj is None:
             return None
         await self.session.delete(obj)

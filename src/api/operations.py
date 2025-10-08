@@ -4,7 +4,7 @@ from typing import List
 
 from src.db.base import get_async_session
 from src.repository.operation_repository import OperationRepository
-from src.schemas.operation_base import OperationCreate, OperationRead, OperationUpdate
+from src.schemas.operation_base import OperationCreate, OperationRead
 
 router = APIRouter(prefix="/operations", tags=["Operations"])
 
@@ -39,7 +39,7 @@ async def get_operation_by_id(
 @router.put("/{operation_id}", response_model=OperationRead)
 async def update_operation(
     operation_id: int,
-    operation_in: OperationUpdate,
+    operation_in: OperationCreate,
     session: AsyncSession = Depends(get_async_session)
 ):
     repo = OperationRepository(session)
