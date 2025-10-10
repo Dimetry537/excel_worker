@@ -9,6 +9,7 @@ from src.api.oracle_get_generator import router as oracle_router
 from src.api.excel import router as excel_router
 from src.api.tasks import router as tasks_router
 from src.api.operations import router as operations_router
+from src.api.patient import router as patient_router
 
 app = FastAPI(title="Excel-Worker")
 
@@ -26,6 +27,7 @@ app.add_middleware(
 app.include_router(doctor_router)
 app.include_router(nurse_router)
 app.include_router(cax_code_router)
+app.include_router(patient_router)
 app.include_router(medical_history_router)
 app.include_router(operations_router)
 app.include_router(discharge_date_router)

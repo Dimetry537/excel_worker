@@ -16,6 +16,7 @@ from src.models.doctor import Doctor
 from src.models.medical_hystory import MedicalHistory
 from src.models.nurse import Nurse
 from src.models.operation import Operation
+from src.models.patient import Patient
 from src.db.base import Base
 
 # this is the Alembic Config object, which provides

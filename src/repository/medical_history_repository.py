@@ -30,6 +30,7 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
         stmt = (
             select(MedicalHistory)
             .options(
+                selectinload(MedicalHistory.patient),
                 selectinload(MedicalHistory.doctor),
                 selectinload(MedicalHistory.nurse),
                 selectinload(MedicalHistory.cax_code),
@@ -48,6 +49,7 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
             stmt = (
                 select(MedicalHistory)
                 .options(
+                    selectinload(MedicalHistory.patient),
                     selectinload(MedicalHistory.doctor),
                     selectinload(MedicalHistory.nurse),
                     selectinload(MedicalHistory.cax_code),
@@ -63,6 +65,7 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
         stmt = (
             select(MedicalHistory)
             .options(
+                selectinload(MedicalHistory.patient),
                 selectinload(MedicalHistory.doctor),
                 selectinload(MedicalHistory.nurse),
                 selectinload(MedicalHistory.cax_code),
@@ -79,6 +82,7 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
         stmt = (
             select(MedicalHistory)
             .options(
+                selectinload(MedicalHistory.patient),
                 selectinload(MedicalHistory.doctor),
                 selectinload(MedicalHistory.nurse),
                 selectinload(MedicalHistory.cax_code),
@@ -89,6 +93,7 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
     
     async def get_filltered(self, full_name: Optional[str] = None, admission_date: Optional[str] = None) -> list[MedicalHistoryRead]:
         stmt = select(MedicalHistory).options(
+            selectinload(MedicalHistory.patient),
             selectinload(MedicalHistory.doctor),
             selectinload(MedicalHistory.nurse),
             selectinload(MedicalHistory.cax_code),
@@ -114,6 +119,7 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
             stmt = (
                 select(MedicalHistory)
                 .options(
+                    selectinload(MedicalHistory.patient),
                     selectinload(MedicalHistory.doctor),
                     selectinload(MedicalHistory.nurse),
                     selectinload(MedicalHistory.cax_code),
@@ -139,6 +145,7 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
             stmt = (
                 select(MedicalHistory)
                 .options(
+                    selectinload(MedicalHistory.patient),
                     selectinload(MedicalHistory.doctor),
                     selectinload(MedicalHistory.nurse),
                     selectinload(MedicalHistory.cax_code),
