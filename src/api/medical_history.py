@@ -5,6 +5,7 @@ from typing import Optional
 from src.db.base import get_async_session
 from src.repository.medical_history_repository import MedicalHistoryRepository
 from src.schemas.medical_history_base import MedicalHistoryCreate, MedicalHistoryRead
+from src.tasks.tasks import generate_report_task
 
 router = APIRouter(prefix="/medical_history", tags=["Medical History"])
 
@@ -69,3 +70,9 @@ async def reactivate_history(
     if not reactivated:
         raise HTTPException(status_code=404, detail="Medical history not found")
     return MedicalHistoryRead.model_validate(reactivated)
+
+
+@router.post("/{history_id}/generate-report")
+async def start_report_generation(history_id: int):
+    task = generate_report_task.delay(history_id)
+    return {"task_id": task.id, "status": "Задача запущена"}
