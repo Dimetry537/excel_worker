@@ -1,5 +1,6 @@
 from io import BytesIO
 from pathlib import Path
+from docxtpl import DocxTemplate
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.repository.medical_history_repository import MedicalHistoryRepository
 from src.repository.operation_repository import OperationRepository
