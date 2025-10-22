@@ -59,3 +59,15 @@ async def delete_operation(
     if not deleted:
         raise HTTPException(status_code=404, detail="Операция не найдена")
     return deleted
+
+
+@router.get("/history/{history_id}", response_model=List[OperationRead])
+async def get_operations_by_history_id(
+    history_id: int,
+    session: AsyncSession = Depends(get_async_session)
+):
+    repo = OperationRepository(session)
+    operations = await repo.get_by_history_id(history_id)
+    if not operations:
+        raise HTTPException(status_code=404, detail="Операции для этой истории не найдены")
+    return operations
