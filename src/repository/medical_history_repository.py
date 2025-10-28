@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, extract, update
 from typing import Optional
 from sqlalchemy.orm import selectinload
+from datetime import datetime
 
 from src.models.medical_hystory import MedicalHistory
 from src.schemas.medical_history_base import MedicalHistoryCreate, MedicalHistoryRead
@@ -91,7 +92,7 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
         result = await self.session.execute(stmt)
         return [MedicalHistoryRead.model_validate(r) for r in result.scalars().all()]
     
-    async def get_filltered(self, full_name: Optional[str] = None, admission_date: Optional[str] = None) -> list[MedicalHistoryRead]:
+    async def get_filtered(self, full_name: Optional[str] = None, start_date: Optional[str] = None, end_date: Optional[str] = None) -> list[MedicalHistoryRead]:
         stmt = select(MedicalHistory).options(
             selectinload(MedicalHistory.patient),
             selectinload(MedicalHistory.doctor),
@@ -100,8 +101,29 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
         )
         if full_name:
             stmt = stmt.where(MedicalHistory.full_name.ilike(f"%{full_name}%"))
-        if admission_date:
-            stmt = stmt.where(MedicalHistory.admission_date == admission_date)
+        
+        parsed_start_date = None
+        if start_date:
+            try:
+                parsed_start_date = datetime.strptime(start_date, '%d.%m.%Y').date()
+            except ValueError:
+                try:
+                    parsed_start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValueError(f"Неверный формат start_date: {start_date}. Ожидается DD.MM.YYYY или YYYY-MM-DD")
+            stmt = stmt.where(MedicalHistory.admission_date >= parsed_start_date)
+        
+        parsed_end_date = None
+        if end_date:
+            try:
+                parsed_end_date = datetime.strptime(end_date, '%d.%m.%Y').date()
+            except ValueError:
+                try:
+                    parsed_end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValueError(f"Неверный формат end_date: {end_date}. Ожидается DD.MM.YYYY или YYYY-MM-DD")
+            stmt = stmt.where(MedicalHistory.admission_date <= parsed_end_date)
+        
         result = await self.session.execute(stmt)
         return [MedicalHistoryRead.model_validate(r) for r in result.scalars().all()]
 

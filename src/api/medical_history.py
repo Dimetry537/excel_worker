@@ -20,11 +20,12 @@ async def create_history(
 @router.get("/", response_model=list[MedicalHistoryRead])
 async def get_all_histories(
     full_name: Optional[str] = Query(default=None),
-    admission_date: Optional[str] = Query(default=None),
+    start_date: Optional[str] = Query(default=None),
+    end_date: Optional[str] = Query(default=None),
     session: AsyncSession = Depends(get_async_session)
 ):
     repo = MedicalHistoryRepository(session)
-    return await repo.get_filltered(full_name=full_name, admission_date=admission_date)
+    return await repo.get_filtered(full_name=full_name, start_date=start_date, end_date=end_date)
 
 @router.get("/{history_id}", response_model=MedicalHistoryRead)
 async def get_history_by_id(
