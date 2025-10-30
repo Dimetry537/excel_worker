@@ -35,7 +35,7 @@ async def generate_medical_history_report(session: AsyncSession, history_id: int
         'history_number': history.history_number,
         'patient_full_name': history.patient.full_name,
         'birth_date': history.patient.birth_date.strftime('%d.%m.%Y'),
-        'patient_adress': history.patient.adress,
+        'patient_adress': history.patient.address,
         'work_place': history.patient.workplace if history.patient.workplace else 'Не указано',
         'admission_date': history.admission_date.strftime('%d.%m.%Y'),
         'discharge_date': history.discharge_date.strftime('%d.%m.%Y') if history.discharge_date else 'Не указана',

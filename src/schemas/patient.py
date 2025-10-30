@@ -5,7 +5,7 @@ from typing import Optional
 class PatientBase(BaseModel):
     full_name: str
     birth_date: date
-    adress: str
+    address: str
     workplace: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

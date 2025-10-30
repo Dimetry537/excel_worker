@@ -1,12 +1,13 @@
-
 import os
 from dotenv import load_dotenv
 from celery import Celery, shared_task
 from celery.utils.log import get_task_logger
 import asyncio
+from datetime import date
+from typing import Optional
 
 from src.services.report_generator import generate_medical_history_report
-from src.db.base import async_session
+from src.db.base import async_session, AsyncSession
 from src.services.excel_service import export_medical_histories_to_excel
 
 load_dotenv(".env")
@@ -17,7 +18,9 @@ celery.conf.update(
     result_backend=os.environ.get("CELERY_RESULT_BACKEND"),
     task_acks_late=True,
     task_default_retry_delay=30,
-    task_max_retries=3
+    task_max_retries=3,
+    worker_pool='prefork', 
+    worker_concurrency=4
 )
 
 logger = get_task_logger(__name__)
@@ -26,15 +29,22 @@ logger = get_task_logger(__name__)
 def say_hello():
     logger.info("Celery & Redis работают нормально!")
 
-
-@shared_task(bind=True, autoretry_for=(Exception,))
-def export_medical_histories_task(self, file_path: str = "exports") -> str:
+@shared_task(bind=True)
+def export_medical_histories_task(
+    self, file_path: str = "exports",
+    full_name: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None
+) -> str:
     async def run():
         async with async_session() as session:
-            return await export_medical_histories_to_excel(session, file_path)
+            return await export_medical_histories_to_excel(session, file_path, full_name, start_date, end_date)
 
     try:
-        result = asyncio.run(run())
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(run())
+        loop.close()
         logger.info(f"Экспорт завершён: {result}")
         return result
     except Exception as e:
@@ -49,7 +59,10 @@ def generate_report_task(self, history_id: int) -> bytes:
             return buffer.getvalue()
 
     try:
-        result = asyncio.run(run())
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(run())
+        loop.close()
         logger.info(f"Отчёт для history_id {history_id} сгенерирован")
         return result
     except Exception as e:

@@ -7,6 +7,9 @@ from datetime import datetime
 from src.models.medical_hystory import MedicalHistory
 from src.schemas.medical_history_base import MedicalHistoryCreate, MedicalHistoryRead
 from src.repository.base_repository import BaseRepository
+from src.repository.patient_repository import PatientRepository
+from src.models.patient import Patient
+from src.schemas.patient import PatientCreate
 
 class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
     def __init__(self, session: AsyncSession):
@@ -21,13 +24,42 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
         return max_number + 1
     
     async def create(self, obj_in: MedicalHistoryCreate) -> MedicalHistoryRead:
+        patient_repo = PatientRepository(self.session)
+        
+        stmt = select(Patient).where(
+            Patient.full_name == obj_in.full_name,
+            Patient.birth_date == obj_in.birth_date,
+            Patient.address == obj_in.address
+        )
+        result = await self.session.execute(stmt)
+        patient = result.scalar_one_or_none()
+        
+        if not patient:
+            patient_data = PatientCreate(
+                full_name=obj_in.full_name,
+                birth_date=obj_in.birth_date,
+                address=obj_in.address,
+                workplace=None
+            )
+            patient = await patient_repo.create(patient_data)
+
         admission_year = obj_in.admission_date.year
         next_number = await self.get_next_history_number(admission_year)
 
-        obj_data = obj_in.model_dump()
-        obj_data["history_number"] = next_number
+        obj_data = {
+            "history_number": next_number,
+            "admission_date": obj_in.admission_date,
+            "discharge_date": obj_in.discharge_date,
+            "diagnosis": obj_in.diagnosis,
+            "icd10_code": obj_in.icd10_code,
+            "patient_id": patient.id,
+            "cax_code_id": obj_in.cax_code_id,
+            "doctor_id": obj_in.doctor_id,
+            "nurse_id": obj_in.nurse_id,
+        }
 
         created = await super().create(obj_data)
+        
         stmt = (
             select(MedicalHistory)
             .options(
@@ -36,7 +68,7 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
                 selectinload(MedicalHistory.nurse),
                 selectinload(MedicalHistory.cax_code),
             )
-            .where(MedicalHistory.id == created.id )
+            .where(MedicalHistory.id == created.id)
         )
         result = await self.session.execute(stmt)
         history = result.scalar_one()

@@ -3,12 +3,13 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, date
 import os
+from typing import Optional
 
 from src.models.medical_hystory import MedicalHistory
 from src.models.cax_code import CaxCode
 from src.models.doctor import Doctor
 from src.models.nurse import Nurse
-
+from src.models.patient import Patient
 
 def prepare_value(v):
     if v is None:
@@ -19,7 +20,11 @@ def prepare_value(v):
 
 
 async def export_medical_histories_to_excel(
-    session: AsyncSession, directory: str = "exports"
+    session: AsyncSession,
+    directory: str = "exports",
+    full_name: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None
 ) -> str:
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -30,9 +35,9 @@ async def export_medical_histories_to_excel(
     stmt = (
         select(
             MedicalHistory.history_number,
-            MedicalHistory.full_name,
-            MedicalHistory.birth_date,
-            MedicalHistory.address,
+            Patient.full_name,
+            Patient.birth_date,
+            Patient.address,
             MedicalHistory.diagnosis,
             MedicalHistory.icd10_code,
             Doctor.full_name.label("doctor_name"),
@@ -42,11 +47,19 @@ async def export_medical_histories_to_excel(
             MedicalHistory.admission_date,
             MedicalHistory.discharge_date,
         )
+        .join(Patient, MedicalHistory.patient_id == Patient.id)
         .join(Doctor, MedicalHistory.doctor_id == Doctor.id, isouter=True)
         .join(Nurse, MedicalHistory.nurse_id == Nurse.id, isouter=True)
         .join(CaxCode, MedicalHistory.cax_code_id == CaxCode.id, isouter=True)
         .where(MedicalHistory.cancelled.is_(None))
     )
+
+    if full_name:
+        stmt = stmt.where(Patient.full_name.ilike(f"%{full_name}%"))
+    if start_date:
+        stmt = stmt.where(MedicalHistory.admission_date >= start_date)
+    if end_date:
+        stmt = stmt.where(MedicalHistory.admission_date <= end_date)
 
     result = await session.execute(stmt)
     rows = result.all()
@@ -74,11 +87,10 @@ async def export_medical_histories_to_excel(
     for row in rows:
         ws.append([prepare_value(v) for v in row])
 
-    # Форматирование дат
     for row in ws.iter_rows(min_row=2, max_col=12):
-        birth_date_cell = row[2]   # колонка C (дата рождения)
-        admission_cell = row[10]  # колонка K (дата поступления)
-        discharge_cell = row[11]  # колонка L (дата выписки)
+        birth_date_cell = row[2]
+        admission_cell = row[10]
+        discharge_cell = row[11]
 
         if isinstance(birth_date_cell.value, (datetime, date)):
             birth_date_cell.number_format = "DD.MM.YYYY"
@@ -87,7 +99,6 @@ async def export_medical_histories_to_excel(
         if isinstance(discharge_cell.value, (datetime, date)):
             discharge_cell.number_format = "DD.MM.YYYY"
 
-    # Ширина колонок
     column_widths = {
         "A": 15,
         "B": 30,

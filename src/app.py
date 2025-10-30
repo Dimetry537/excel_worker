@@ -6,7 +6,6 @@ from src.api.cax_codes import router as cax_code_router
 from src.api.medical_history import router as medical_history_router
 from src.api.discharge_date import router as discharge_date_router
 from src.api.oracle_get_generator import router as oracle_router
-from src.api.excel import router as excel_router
 from src.api.tasks import router as tasks_router
 from src.api.operations import router as operations_router
 from src.api.patient import router as patient_router
@@ -33,6 +32,5 @@ app.include_router(medical_history_router)
 app.include_router(operations_router)
 app.include_router(discharge_date_router)
 app.include_router(oracle_router)
-app.include_router(excel_router)
 app.include_router(tasks_router)
 app.include_router(medical_history_report_router)

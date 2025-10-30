@@ -5,7 +5,7 @@ from typing import Optional
 from src.db.base import get_async_session
 from src.repository.medical_history_repository import MedicalHistoryRepository
 from src.schemas.medical_history_base import MedicalHistoryCreate, MedicalHistoryRead
-from src.tasks.tasks import generate_report_task
+from src.tasks.tasks import generate_report_task, export_medical_histories_task
 
 router = APIRouter(prefix="/medical_history", tags=["Medical History"])
 
@@ -73,7 +73,11 @@ async def reactivate_history(
     return MedicalHistoryRead.model_validate(reactivated)
 
 
-@router.post("/{history_id}/generate-report")
-async def start_report_generation(history_id: int):
-    task = generate_report_task.delay(history_id)
-    return {"task_id": task.id, "status": "Задача запущена"}
+@router.post("/export")
+async def start_export(
+    full_name: Optional[str] = Query(None),
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None)
+):
+    task = export_medical_histories_task.delay(full_name=full_name, start_date=start_date, end_date=end_date)
+    return {"task_id": task.id, "status": "Задача на экспорт запущена"}

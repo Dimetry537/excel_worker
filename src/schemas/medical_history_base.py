@@ -12,15 +12,23 @@ class MedicalHistoryBase(BaseModel):
     diagnosis: str
     icd10_code: str
 
-    patient_id: int
     cax_code_id: int
     doctor_id: int
     nurse_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
-class MedicalHistoryCreate(MedicalHistoryBase):
-    pass
+class MedicalHistoryCreate(BaseModel):
+    admission_date: date
+    discharge_date: Optional[date] = None
+    full_name: str
+    birth_date: date
+    address: str
+    diagnosis: str
+    icd10_code: str
+    cax_code_id: int
+    doctor_id: int
+    nurse_id: int
 
 class MedicalHistoryRead(MedicalHistoryBase):
     id: int
