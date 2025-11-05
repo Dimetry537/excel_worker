@@ -8,7 +8,8 @@ ENV PYTHONFAULTHANDLER=1 \
     PIP_DEFAULT_TIMEOUT=100 \
     POETRY_VERSION=1.3.1 \
     PIP_VERSION=22.1.2 \
-    ORACLE_CLIENT=/opt/oracle/instantclient_23_9
+    ORACLE_CLIENT=/opt/oracle/instantclient_23_9\
+    POETRY_INSTALLER_MAX_WORKERS=4
 
 RUN apt-get update && apt-get install -y \
     build-essential \
