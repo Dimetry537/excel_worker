@@ -3,30 +3,28 @@ name = "excel-worker"
 version = "0.1.0"
 description = ""
 authors = ["Dimetry537 <maksakov1988@gmail.com>"]
+license = "MIT"
 readme = "README.md"
-packages = [
-    { include = "src" }
-]
+packages = [{ include = "src" }]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-celery = "^5.4.0"
-SQLAlchemy = "^2.0.37"
+python = "3.10.18"
+celery = "^5.5.3"
+sqlalchemy = "^2.0.44"
 asyncpg = "^0.30.0"
-python-dotenv = "^1.0.1"
-alembic = "^1.14.1"
-uvicorn = "^0.35.0"
-fastapi = "^0.116.1"
-pydantic = "^2.11.7"
-starlette = "^0.47.2"
-holidays = "^0.78"
-oracledb = "^3.3.0"
-libaio = "^0.9.3"
+python-dotenv = "^1.2.1"
+alembic = "^1.17.1"
+uvicorn = "^0.38.0"
+
+fastapi = "^0.121.0"
+pydantic = "^2.12.4"
+pydantic-settings = "^2.11.0"
+holidays = "^0.84"
+oracledb = "^3.4.0"
 openpyxl = "^3.1.5"
 flower = "^2.0.1"
-redis = "^6.4.0"
+redis = "^7.0.1"
 docxtpl = "^0.20.1"
-pydantic-settings = "^2.11.0"
 pyjwt = {extras = ["crypto"], version = "^2.10.1"}
 bcrypt = "^5.0.0"
 
