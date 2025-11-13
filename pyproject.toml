@@ -27,6 +27,7 @@ redis = "^7.0.1"
 docxtpl = "^0.20.1"
 pyjwt = {extras = ["crypto"], version = "^2.10.1"}
 bcrypt = "^5.0.0"
+python-multipart = "^0.0.20"
 
 
 [build-system]

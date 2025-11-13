@@ -1,41 +1,51 @@
 import os
-
-from pydantic import BaseModel
 from pathlib import Path
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from dotenv import load_dotenv
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 
-load_dotenv()
-
-DB_HOST = os.environ.get("DB_HOST")
-DB_PORT = os.environ.get("DB_PORT")
-DB_NAME = os.environ.get("DB_NAME")
-DB_USER = os.environ.get("DB_USER")
-DB_PASS = os.environ.get("DB_PASS")
-
-ORACLE_USER = os.environ.get("ORACLE_USER")
-ORACLE_PASSWORD = os.environ.get("ORACLE_PASSWORD")
-ORACLE_HOST = os.environ.get("ORACLE_HOST")
-ORACLE_PORT = os.environ.get("ORACLE_PORT")
-ORACLE_SERVICE = os.environ.get("ORACLE_SERVICE")
-ORACLE_CLIENT = os.environ.get("ORACLE_CLIENT")
-
-DB_HOST_TEST = os.environ.get("DB_HOST_TEST")
-DB_PORT_TEST = os.environ.get("DB_PORT_TEST")
-DB_NAME_TEST = os.environ.get("DB_NAME_TEST")
-DB_USER_TEST = os.environ.get("DB_USER_TEST")
-DB_PASS_TEST = os.environ.get("DB_PASS_TEST")
-
-class AuthJWT(BaseModel):
+class AuthJWT(BaseSettings):
     private_key_path: Path = BASE_DIR / ".certs" / "jwt-private.pem"
     public_key_path: Path = BASE_DIR / ".certs" / "jwt-public.pem"
     algorithm: str = "RS256"
-    access_token_expires: int = 15  # minutes
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_minutes: int = 1440
 
 class Settings(BaseSettings):
+    db_host: str
+    db_port: int
+    db_name: str
+    db_user: str
+    db_pass: str
+
+    oracle_user: str
+    oracle_password: str
+    oracle_host: str
+    oracle_port: int
+    oracle_service: str
+    oracle_client: str
+
+    db_host_test: str
+    db_port_test: int
+    db_name_test: str
+    db_user_test: str
+    db_pass_test: str
+
+    cors_host: str
+    cors_port: str
+    celery_broker_url: str
+    celery_result_backend: str
+
+    admin_username: str
+    admin_password: str
+
     auth_jwt: AuthJWT = AuthJWT()
+
+    model_config = SettingsConfigDict(
+        env_file=BASE_DIR / ".env",
+        env_ignore_empty=True,
+        case_sensitive=False,
+    )
 
 settings = Settings()

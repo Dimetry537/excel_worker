@@ -10,7 +10,8 @@ import sys
 
 sys.path.append(os.path.join(sys.path[0], "src"))
 
-from src.db.config import DB_HOST, DB_PORT, DB_PASS, DB_NAME, DB_USER
+from src.db.config import settings
+from src.models.user_role import user_roles
 from src.models.cax_code import CaxCode
 from src.models.doctor import Doctor
 from src.models.medical_hystory import MedicalHistory
@@ -18,6 +19,7 @@ from src.models.nurse import Nurse
 from src.models.operation import Operation
 from src.models.patient import Patient
 from src.models.user import User
+from src.models.role import Role
 from src.db.base import Base
 
 # this is the Alembic Config object, which provides
@@ -25,11 +27,11 @@ from src.db.base import Base
 config = context.config
 
 section = config.config_ini_section
-config.set_section_option(section, "DB_HOST", DB_HOST)
-config.set_section_option(section, "DB_PORT", DB_PORT)
-config.set_section_option(section, "DB_USER", DB_USER)
-config.set_section_option(section, "DB_NAME", DB_NAME)
-config.set_section_option(section, "DB_PASS", DB_PASS)
+config.set_section_option(section, "DB_HOST", settings.db_host)
+config.set_section_option(section, "DB_PORT", str(settings.db_port))
+config.set_section_option(section, "DB_USER", settings.db_user)
+config.set_section_option(section, "DB_NAME", settings.db_name)
+config.set_section_option(section, "DB_PASS", settings.db_pass)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

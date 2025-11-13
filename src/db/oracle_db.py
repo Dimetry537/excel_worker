@@ -3,14 +3,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from contextlib import contextmanager
 
-from src.db.config import ORACLE_HOST, ORACLE_PORT, ORACLE_USER, ORACLE_PASSWORD, ORACLE_SERVICE, ORACLE_CLIENT
+from src.db.config import settings
 
-print (f"Oracle Client: {ORACLE_CLIENT}")
+print (f"Oracle Client: {settings.oracle_client}")
 
-if ORACLE_CLIENT:
-    oracledb.init_oracle_client(lib_dir=ORACLE_CLIENT)
+if settings.oracle_client:
+    oracledb.init_oracle_client(lib_dir=settings.oracle_client)
 
-ORACLE_DATABASE_URL = f"oracle+oracledb://{ORACLE_USER}:{ORACLE_PASSWORD}@{ORACLE_HOST}:{ORACLE_PORT}/?service_name={ORACLE_SERVICE}"
+ORACLE_DATABASE_URL = f"oracle+oracledb://{settings.oracle_user}:{settings.oracle_password}@{settings.oracle_host}:{settings.oracle_port}/?service_name={settings.oracle_service}"
 
 engine = create_engine(
     ORACLE_DATABASE_URL,

@@ -10,6 +10,9 @@ from src.api.tasks import router as tasks_router
 from src.api.operations import router as operations_router
 from src.api.patient import router as patient_router
 from src.api.medical_history_report import router as medical_history_report_router
+from src.api.users import router as users_router
+from src.api.roles import router as roles_router
+from src.api.auth import router as auth_router
 
 app = FastAPI(title="Excel-Worker")
 
@@ -34,3 +37,6 @@ app.include_router(discharge_date_router)
 app.include_router(oracle_router)
 app.include_router(tasks_router)
 app.include_router(medical_history_report_router)
+app.include_router(users_router)
+app.include_router(roles_router)
+app.include_router(auth_router)
