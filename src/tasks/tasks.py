@@ -1,21 +1,19 @@
 import os
-from dotenv import load_dotenv
 from celery import Celery, shared_task
 from celery.utils.log import get_task_logger
 import asyncio
 from datetime import datetime
 from typing import Optional
 
+from src.db.config import settings
 from src.services.report_generator import generate_medical_history_report
 from src.db.base import async_session
 from src.services.excel_service import export_medical_histories_to_excel
 
-load_dotenv(".env")
-
 celery = Celery(__name__)
 celery.conf.update(
-    broker_url=os.environ.get("CELERY_BROKER_URL"),
-    result_backend=os.environ.get("CELERY_RESULT_BACKEND"),
+    broker_url=settings.celery_broker_url,
+    result_backend=settings.celery_result_backend,
     task_acks_late=True,
     task_default_retry_delay=30,
     task_max_retries=3,

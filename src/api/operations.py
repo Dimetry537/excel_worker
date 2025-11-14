@@ -5,8 +5,13 @@ from typing import List
 from src.db.base import get_async_session
 from src.repository.operation_repository import OperationRepository
 from src.schemas.operation_base import OperationCreate, OperationRead
+from src.auth.dependencies import get_current_user
 
-router = APIRouter(prefix="/operations", tags=["Operations"])
+router = APIRouter(
+    prefix="/operations",
+    tags=["Operations"],
+    dependencies=[Depends(get_current_user)]
+)
 
 
 @router.post("/", response_model=OperationRead)

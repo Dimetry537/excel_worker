@@ -7,7 +7,10 @@ from src.schemas.auth import RoleCreate, RoleRead
 from src.repository.role_repository import RoleRepository
 from src.auth.dependencies import role_required
 
-router = APIRouter(prefix="/roles", tags=["roles"])
+router = APIRouter(
+    prefix="/roles",
+    tags=["roles"]
+)
 
 @router.post("/", response_model=RoleRead)
 async def create_role(

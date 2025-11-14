@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from src.db.config import settings
 from src.api.doctor import router as doctor_router
 from src.api.nurse import router as nurse_router
 from src.api.cax_codes import router as cax_code_router
@@ -17,7 +19,7 @@ from src.api.auth import router as auth_router
 app = FastAPI(title="Excel-Worker")
 
 
-origins = ["*"]
+origins = [f"http://{settings.cors_host}:{settings.cors_port}"]
 
 app.add_middleware(
     CORSMiddleware,

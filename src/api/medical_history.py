@@ -5,9 +5,14 @@ from typing import Optional
 from src.db.base import get_async_session
 from src.repository.medical_history_repository import MedicalHistoryRepository
 from src.schemas.medical_history_base import MedicalHistoryCreate, MedicalHistoryRead
-from src.tasks.tasks import generate_report_task, export_medical_histories_task
+from src.tasks.tasks import export_medical_histories_task
+from src.auth.dependencies import get_current_user
 
-router = APIRouter(prefix="/medical_history", tags=["Medical History"])
+router = APIRouter(
+    prefix="/medical_history",
+    tags=["Medical History"],
+    dependencies=[Depends(get_current_user)]
+)
 
 @router.post("/", response_model=MedicalHistoryRead)
 async def create_history(

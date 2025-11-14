@@ -3,8 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.schemas.cax_code import CaxCodeCreate, CaxCodeRead
 from src.repository.cax_code_repository import CaxCodeRepository
 from src.db.base import get_async_session
+from src.auth.dependencies import get_current_user
 
-router = APIRouter(prefix="/cax_codes", tags=["Cax Codes"])
+router = APIRouter(
+    prefix="/cax_codes",
+    tags=["Cax Codes"],
+    dependencies=[Depends(get_current_user)]
+)
 
 @router.post("/", response_model=CaxCodeRead)
 async def create_cax_code(

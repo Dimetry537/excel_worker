@@ -3,8 +3,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from src.db.oracle_db import get_db
 from typing import Optional
+from src.auth.dependencies import get_current_user
 
-router = APIRouter(prefix="/oracle", tags=["Oracle DB"])
+router = APIRouter(
+    prefix="/oracle",
+    tags=["Oracle DB"],
+    dependencies=[Depends(get_current_user)]
+)
 
 @router.get("/oracle-test")
 def oracle_test(session: Session = Depends(get_db)):

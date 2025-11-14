@@ -3,8 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.schemas.personal_base import PersonalCreate, PersonalRead
 from src.repository.nurse_repository import NurseRepository
 from src.db.base import get_async_session
+from src.auth.dependencies import get_current_user
 
-router = APIRouter(prefix="/nurses", tags=["nurses"])
+router = APIRouter(
+    prefix="/nurses",
+    tags=["nurses"],
+    dependencies=[Depends(get_current_user)]
+)
 
 @router.post("/", response_model=PersonalRead)
 async def create_nurse(
