@@ -24,6 +24,7 @@ class MedicalHistoryCreate(BaseModel):
     full_name: str
     birth_date: date
     address: str
+    workplace: Optional[str] = None
     diagnosis: str
     icd10_code: str
     cax_code_id: int
