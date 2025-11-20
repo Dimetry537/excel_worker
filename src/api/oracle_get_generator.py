@@ -35,7 +35,9 @@ def search_patient(
         SELECT
             fn_pat_name_by_id(p.keyid) AS FIO,
             TO_CHAR(p.birthdate, 'dd.mm.yyyy') AS BD,
-            p_pat.address(p.keyid) AS ADR
+            p_pat.address(p.keyid) AS ADR,
+            p.LASTWRKPLACE,
+            p.POSITION
         FROM SOLUTION_MED.patient p
         WHERE 
             (:surname IS NULL OR UPPER(p.LASTNAME) LIKE UPPER(NULLIF(:surname, '')) || '%')
@@ -63,7 +65,9 @@ def search_patient(
             {
                 "pname": row[0],
                 "birthdate": row[1],
-                "address": row[2]
+                "address": row[2],
+                "lastworkplace": row[3],
+                "position": row[4],
             } for row in rows
         ]
 
