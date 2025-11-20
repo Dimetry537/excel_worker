@@ -132,7 +132,10 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
             selectinload(MedicalHistory.cax_code),
         )
         if full_name:
-            stmt = stmt.where(MedicalHistory.full_name.ilike(f"%{full_name}%"))
+            stmt = (
+                stmt.join(MedicalHistory.patient)
+                .where(Patient.full_name.ilike(f"%{full_name}%"))
+            )
         
         parsed_start_date = None
         if start_date:
