@@ -39,7 +39,7 @@ class MedicalHistoryRepository(BaseRepository[MedicalHistory]):
                 full_name=obj_in.full_name,
                 birth_date=obj_in.birth_date,
                 address=obj_in.address,
-                workplace=None
+                workplace=getattr(obj_in, "workplace", None)
             )
             patient = await patient_repo.create(patient_data)
 
