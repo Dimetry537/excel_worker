@@ -86,3 +86,13 @@ async def start_export(
 ):
     task = export_medical_histories_task.delay(full_name=full_name, start_date=start_date, end_date=end_date)
     return {"task_id": task.id, "status": "Задача на экспорт запущена"}
+
+@router.get("/tasks/status/{task_id}")
+async def get_task_status(task_id: str):
+    result = export_medical_histories_task.AsyncResult(task_id)
+    if result.state == "SUCCESS":
+        return {"state": result.state, "result": result.get()}
+    elif result.state == "FAILURE":
+        return {"state": result.state, "result": str(result.info)}
+    else:
+        return {"state": result.state}

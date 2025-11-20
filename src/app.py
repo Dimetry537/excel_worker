@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from src.db.config import settings
 from src.api.doctor import router as doctor_router
@@ -42,3 +43,5 @@ app.include_router(medical_history_report_router)
 app.include_router(users_router)
 app.include_router(roles_router)
 app.include_router(auth_router)
+
+app.mount("/exports", StaticFiles(directory="exports"), name="exports")
