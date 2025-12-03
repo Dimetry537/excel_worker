@@ -72,7 +72,4 @@ async def get_operations_by_history_id(
     session: AsyncSession = Depends(get_async_session)
 ):
     repo = OperationRepository(session)
-    operations = await repo.get_by_history_id(history_id)
-    if not operations:
-        raise HTTPException(status_code=404, detail="Операции для этой истории не найдены")
-    return operations
+    return await repo.get_by_history_id(history_id)

@@ -4,7 +4,7 @@ from typing import Optional
 
 from src.db.base import get_async_session
 from src.repository.medical_history_repository import MedicalHistoryRepository
-from src.schemas.medical_history_base import MedicalHistoryCreate, MedicalHistoryRead
+from src.schemas.medical_history_base import MedicalHistoryCreate, MedicalHistoryRead, MedicalHistoryUpdate
 from src.tasks.tasks import export_medical_histories_task
 from src.auth.dependencies import get_current_user
 
@@ -46,7 +46,7 @@ async def get_history_by_id(
 @router.put("/{history_id}", response_model=MedicalHistoryRead)
 async def update_history(
     history_id: int,
-    history_in: MedicalHistoryCreate,
+    history_in: MedicalHistoryUpdate,
     session: AsyncSession = Depends(get_async_session)
 ):
     repo = MedicalHistoryRepository(session)

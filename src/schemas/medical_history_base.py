@@ -6,7 +6,7 @@ from src.schemas.personal_base import PersonalRead
 from src.schemas.cax_code import CaxCodeRead
 from src.schemas.patient import PatientRead
 
-class MedicalHistoryBase(BaseModel):
+class _MedicalHistoryBase(BaseModel):
     admission_date: date
     discharge_date: Optional[date] = None
     diagnosis: str
@@ -18,20 +18,23 @@ class MedicalHistoryBase(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-class MedicalHistoryCreate(BaseModel):
-    admission_date: date
-    discharge_date: Optional[date] = None
+class MedicalHistoryCreate(_MedicalHistoryBase):
     full_name: str
     birth_date: date
     address: str
     workplace: Optional[str] = None
-    diagnosis: str
-    icd10_code: str
-    cax_code_id: int
-    doctor_id: int
-    nurse_id: int
 
-class MedicalHistoryRead(MedicalHistoryBase):
+class MedicalHistoryUpdate(BaseModel):
+    diagnosis: Optional[str] = None
+    icd10_code: Optional[str] = None
+    cax_code_id: Optional[int] = None
+    doctor_id: Optional[int] = None
+    nurse_id: Optional[int] = None
+    discharge_date: Optional[date] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class MedicalHistoryRead(_MedicalHistoryBase):
     id: int
     history_number: int
     created_at: Optional[datetime] = None
