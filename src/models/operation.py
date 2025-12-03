@@ -7,7 +7,7 @@ class Operation(Base, TimestampMixin):
     __tablename__ = "operations"
 
     id = Column(Integer, primary_key=True, index=True)
-    oper_name = Column(String, unique=True, nullable=False)
+    oper_name = Column(String, unique=False, nullable=False)
     oper_protocol = Column(Text, nullable=False)
 
     medical_history_id = Column(

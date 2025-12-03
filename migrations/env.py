@@ -10,17 +10,10 @@ import sys
 
 sys.path.append(os.path.join(sys.path[0], "src"))
 
-from src.db.config import settings
-from src.models.user_role import user_roles
-from src.models.cax_code import CaxCode
-from src.models.doctor import Doctor
-from src.models.medical_hystory import MedicalHistory
-from src.models.nurse import Nurse
-from src.models.operation import Operation
-from src.models.patient import Patient
-from src.models.user import User
-from src.models.role import Role
 from src.db.base import Base
+from src.db.config import settings
+import src.models
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
