@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
+from celery.result import AsyncResult
 from io import BytesIO
 
 from src.tasks.tasks import generate_report_task
@@ -11,15 +12,17 @@ router = APIRouter(
     dependencies=[Depends(get_current_user)]
 )
 
-@router.post("/{history_id}/report_async")
-def start_generate_report_async(history_id: int):
-    task = generate_report_task.delay(history_id)
-    return {"task_id": task.id, "message": "Задача на генерацию отчёта запущена. Проверьте статус по /tasks/{task_id}"}
+@router.post("/{history_id}/report-async")
+async def start_generate_report_async(history_id: int):
+    try:
+        task = generate_report_task.delay(history_id)
+        return {"task_id": task.id, "message": "Задача запущена"}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail="Celery недоступен")
 
 
 @router.get("/report_task/{task_id}")
 async def get_report_from_task(task_id: str):
-    from celery.result import AsyncResult
     task_result = AsyncResult(task_id)
     if task_result.status != "SUCCESS":
         raise HTTPException(status_code=400, detail=f"Задача не готова. Статус: {task_result.status}")

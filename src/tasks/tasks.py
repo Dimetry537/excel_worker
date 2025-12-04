@@ -1,5 +1,4 @@
-import os
-from celery import Celery, shared_task
+from celery import Celery
 from celery.utils.log import get_task_logger
 import asyncio
 from datetime import datetime
@@ -10,19 +9,28 @@ from src.services.report_generator import generate_medical_history_report
 from src.db.base import async_session
 from src.services.excel_service import export_medical_histories_to_excel
 
-celery = Celery(__name__)
-celery.conf.update(
-    broker_url=settings.celery_broker_url,
-    result_backend=settings.celery_result_backend,
+celery_app = Celery(
+    "worker",
+    broker=settings.celery_broker_url,
+    backend=settings.celery_result_backend,
+    include=["src.tasks.tasks"]
+)
+
+celery_app.conf.update(
+    broker_connection_retry_on_startup=True,
+    worker_prefetch_multiplier=1,
     task_acks_late=True,
     task_default_retry_delay=30,
     task_max_retries=3,
-    worker_concurrency=10
+    worker_concurrency=4,
+    task_routes={
+        "src.tasks.tasks.*": {"queue": "reports"}
+    }
 )
 
 logger = get_task_logger(__name__)
 
-@shared_task(bind=True)
+@celery_app.task(bind=True, name="generate_report_task")
 def generate_report_task(self, history_id: int) -> bytes:
     try:
         loop = asyncio.get_event_loop()
@@ -50,7 +58,7 @@ def generate_report_task(self, history_id: int) -> bytes:
         if is_new_loop and not loop.is_closed():
             loop.close()
 
-@shared_task(bind=True)
+@celery_app.task(bind=True, name="export_medical_histories_task")
 def export_medical_histories_task(
     self,
     full_name: Optional[str] = None,
