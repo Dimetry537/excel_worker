@@ -6,18 +6,18 @@ from src.tasks.tasks import generate_report_task
 from src.auth.dependencies import get_current_user
 
 router = APIRouter(
-    prefix="/medical-histories",
-    tags=["medical-histories"],
+    prefix="/medical_history",
+    tags=["medical_histories"],
     dependencies=[Depends(get_current_user)]
 )
 
-@router.post("/{history_id}/report-async")
+@router.post("/{history_id}/report_async")
 def start_generate_report_async(history_id: int):
     task = generate_report_task.delay(history_id)
     return {"task_id": task.id, "message": "Задача на генерацию отчёта запущена. Проверьте статус по /tasks/{task_id}"}
 
 
-@router.get("/report-task/{task_id}")
+@router.get("/report_task/{task_id}")
 async def get_report_from_task(task_id: str):
     from celery.result import AsyncResult
     task_result = AsyncResult(task_id)
