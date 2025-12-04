@@ -21,7 +21,7 @@ async def start_generate_report_async(history_id: int):
         raise HTTPException(status_code=503, detail="Celery недоступен")
 
 
-@router.get("/report_task/{task_id}")
+@router.get("/report-task/{task_id}")
 async def get_report_from_task(task_id: str):
     task_result = AsyncResult(task_id)
     if task_result.status != "SUCCESS":
