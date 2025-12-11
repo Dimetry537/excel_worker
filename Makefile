@@ -1,4 +1,4 @@
-# Makefile docker exec -it excel_worker-web-1 /bin/bash
+# Makefile docker exec -it fastapi_api /bin/bash
 
 PROJECT_ROOT=/
 APP_DIR=/app
