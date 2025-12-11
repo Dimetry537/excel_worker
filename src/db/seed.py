@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from src.db.base import get_async_session
-from src.models.user_role import user_roles
+from src.db.base import user_roles
 from src.models.role import Role
 from src.models.user import User
 from src.auth.utils import hash_password

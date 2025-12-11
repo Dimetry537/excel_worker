@@ -43,9 +43,15 @@ class Settings(BaseSettings):
     auth_jwt: AuthJWT = AuthJWT()
 
     model_config = SettingsConfigDict(
-        env_file=BASE_DIR / ".env",
+        env_file=(
+            BASE_DIR / ".env.dev" if (BASE_DIR / ".env.dev").exists()
+            else BASE_DIR / ".env.prod" if (BASE_DIR / ".env.prod").exists()
+            else BASE_DIR / ".env"
+        ),
+        env_file_encoding="utf-8",
         env_ignore_empty=True,
         case_sensitive=False,
+        extra="ignore"
     )
 
 settings = Settings()

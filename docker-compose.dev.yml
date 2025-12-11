@@ -1,0 +1,45 @@
+services:
+  web:
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: python main.py
+  
+  celery:
+    command: celery -A src.tasks.tasks worker --loglevel=info --concurrency=4
+
+  pg:
+    image: postgres:14-alpine
+    container_name: postgres_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - ./src/db/dumps:/docker-entrypoint-initdb.d
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: maksakov1988@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin2208
+    ports:
+      - "8080:80"
+    depends_on:
+      - pg
+
+  flower:
+    build: .
+    container_name: flower
+    command: celery -A src.tasks.tasks flower --port=5555
+    ports:
+      - "5556:5555"
+
+volumes:
+  pg-data:
