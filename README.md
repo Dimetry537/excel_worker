@@ -1,12 +1,15 @@
 # excel_worker
+
+# Создание каталога для ключей
+```shell
+mkdir .certs
+```
 # Генерация приватного и публичного ключей для работы системы
 ```shell
-# Generate an RSA private key, of size 2048
 openssl genrsa -out jwt-private.pem 2048
 ```
 
 ```shell
-# Extract the public key from the key pair, which can be used in a certificate
 openssl rsa -in jwt-private.pem -outform PEM -pubout -out jwt-public.pem
 ```
 # Пароль для Flower
@@ -29,14 +32,14 @@ ssh user@your_domain
 # Устанавливаем nginx и утилиты
 sudo apt update && sudo apt install nginx openssl htpasswd -y
 
-# Создаём самоподписной сертификат на 10 лет (можно потом заменить на Let’s Encrypt)
+# Создаём самоподписной сертификат на 10 лет
 sudo mkdir -p /etc/ssl/private /etc/ssl/certs
 sudo openssl req -x509 -nodes -days 3650 -newkey rsa:4096 \
   -keyout /etc/ssl/private/internal.key \
   -out /etc/ssl/certs/internal.crt \
   -subj "/CN=YOUR_DOMAIN"
 
-# Создаём пароль для Flower (замени на свой очень сильный)
+# Создаём пароль для Flower
 sudo htpasswd -bc /etc/nginx/.htpasswd_flower admin СуперСекретныйПароль2025
 
 # Создаём конфиг
@@ -77,3 +80,7 @@ EOF
 sudo ln -sf /etc/nginx/sites-available/app /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl restart nginx
+
+# Запуск проекта
+make prod-build - Создание проекта и контейнеров
+make prod - Запуск контейнеров
