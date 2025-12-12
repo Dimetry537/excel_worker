@@ -1,51 +1,35 @@
 services:
   web:
+    build: .
+    container_name: fastapi_app
+    restart: unless-stopped
     expose:
       - "8000"
     ports: []
     environment:
-      - DATABASE_URL=postgresql://${db_user}:${db_pass}@host.docker.internal:${db_port}/${db_name}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - DATABASE_URL=postgresql://${db_user}:${db_pass}@${db_host}:${db_port}/${db_name}
 
   celery:
+    build: .
+    container_name: celery_worker
+    restart: unless-stopped
     expose:
       - "5555"
     ports: []
     command: celery -A src.tasks.tasks worker --loglevel=info --concurrency=8 -n worker@%h -E
     environment:
-      - DATABASE_URL=postgresql://${db_user}:${db_pass}@host.docker.internal:${db_port}/${db_name}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - DATABASE_URL=postgresql://${db_user}:${db_pass}@${db_host}:${db_port}/${db_name}
 
   flower:
+    build: .
+    container_name: flower
+    restart: unless-stopped
     expose:
       - "5555"
     ports: []
     command: celery -A src.tasks.tasks flower --port=5555 --basic_auth=admin:${admin_password}
 
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
+  redis:
+    image: redis:7-alpine
+    container_name: redis_cache
     restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./deploy/nginx/conf.d:/etc/nginx/conf.d.template:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - certbot-webroot:/var/www/certbot
-      - nginx-conf:/etc/nginx/conf.d
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        envsubst '$$DOMAIN' < /etc/nginx/conf.d.template/app.conf.template > /etc/nginx/conf.d/app.conf && \
-        htpasswd -bc /etc/nginx/.htpasswd admin ${FLOWER_PASSWORD} && \
-        nginx -g 'daemon off;'
-    depends_on:
-      - web
-      - flower
-
-volumes:
-  certbot-webroot:
-  nginx-conf:
