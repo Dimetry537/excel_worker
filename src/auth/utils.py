@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime, timezone  # Добавьте timezone
+from datetime import timedelta, datetime, timezone
 import jwt
 import bcrypt
 from typing import Dict
