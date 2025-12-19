@@ -1,7 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
 from src.db.config import settings
 from src.api.doctor import router as doctor_router
 from src.api.nurse import router as nurse_router
@@ -19,8 +18,11 @@ from src.api.auth import router as auth_router
 
 app = FastAPI(title="Excel-Worker")
 
-
-origins = [f"http://{settings.cors_host}:{settings.cors_port}"]
+origins = [
+    f"http://{settings.cors_host}:{settings.cors_port}",
+    f"https://{settings.cors_host}:{settings.cors_port}",
+    f"https://{settings.cors_host}",
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,18 +32,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(doctor_router)
-app.include_router(nurse_router)
-app.include_router(cax_code_router)
-app.include_router(patient_router)
-app.include_router(medical_history_router)
-app.include_router(operations_router)
-app.include_router(discharge_date_router)
-app.include_router(oracle_router)
-app.include_router(tasks_router)
-app.include_router(medical_history_report_router)
-app.include_router(users_router)
-app.include_router(roles_router)
-app.include_router(auth_router)
+api_router = APIRouter(prefix="/api")
+
+api_router.include_router(doctor_router)
+api_router.include_router(nurse_router)
+api_router.include_router(cax_code_router)
+api_router.include_router(patient_router)
+api_router.include_router(medical_history_router)
+api_router.include_router(operations_router)
+api_router.include_router(discharge_date_router)
+api_router.include_router(oracle_router)
+api_router.include_router(tasks_router)
+api_router.include_router(medical_history_report_router)
+api_router.include_router(users_router)
+api_router.include_router(roles_router)
+api_router.include_router(auth_router)
+
+app.include_router(api_router)
 
 app.mount("/exports", StaticFiles(directory="exports"), name="exports")
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
