@@ -117,4 +117,4 @@ async def export_medical_histories_to_excel(
         ws.column_dimensions[col].width = width
 
     wb.save(file_path)
-    return file_path
+    return f"/exports/{os.path.basename(file_path)}"
