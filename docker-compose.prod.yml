@@ -50,7 +50,7 @@ services:
       - "5555"
     ports:
       - "5555:5555"
-    command: celery -A src.tasks.tasks flower --port=5555 --basic_auth=${admin_username}:${admin_password}
+    command: celery -A src.tasks.tasks flower --port=5555 --basic_auth=${admin_flower_username}:${admin_flower_password}
     env_file:
       - .env.prod
     depends_on:
