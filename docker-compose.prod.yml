@@ -69,6 +69,18 @@ services:
       timeout: 5s
       retries: 5
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: maksakov1988@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: ${admin_pg_password}
+    expose:
+      - "80"
+    ports:
+      - "5050:80"
+
 volumes:
   redis-data:
   exports_data:
