@@ -26,10 +26,10 @@ dev-build:
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
 prod:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+	docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 prod-build:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+	docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 
 down:
 	docker compose -f docker-compose.yml -f docker-compose.prod.yml down
