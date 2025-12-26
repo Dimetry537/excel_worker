@@ -40,6 +40,11 @@ class Settings(BaseSettings):
     admin_username: str
     admin_password: str
 
+    admin_flower_username: str
+    admin_flower_password: str
+
+    admin_pg_password: str
+
     auth_jwt: AuthJWT = AuthJWT()
 
     model_config = SettingsConfigDict(
